@@ -1,15 +1,17 @@
 package mymvc;
 
 import interceptor.DemoInterceptor;
+import messageconverter.MyMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
+
+import java.util.List;
 
 /**
  * Created by menghu on 2017/7/3.
@@ -17,6 +19,7 @@ import org.springframework.web.servlet.view.JstlView;
 @Configuration
 @ComponentScan
 @EnableWebMvc
+@EnableScheduling
 public class MyMvcConfig extends WebMvcConfigurerAdapter{
 
     @Bean
@@ -44,6 +47,25 @@ public class MyMvcConfig extends WebMvcConfigurerAdapter{
     @Override
     public void addInterceptors(InterceptorRegistry registry) {// 2
         registry.addInterceptor(demoInterceptor());
+    }
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/index").setViewName("/index");
+        registry.addViewController("/toUpload").setViewName("/upload");
+        registry.addViewController("/converter").setViewName("/converter");
+        registry.addViewController("/sse").setViewName("/sse");
+        registry.addViewController("/async").setViewName("/async");
+    }
+
+    @Bean
+    public MyMessageConverter converter(){
+        return new MyMessageConverter();
+    }
+
+    @Override
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters){
+        converters.add(converter());
     }
 
 }
